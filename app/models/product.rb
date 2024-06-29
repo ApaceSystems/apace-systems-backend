@@ -11,12 +11,13 @@
 # Validations:
 #   - name:
 #     - must be present
+#     - must be between 1 and 255 characters long
 #   - price:
 #     - must be a number greater than or equal to 0
 #     - can be nil (if the product has no price)
 class Product < ApplicationRecord
   belongs_to :category
-  validates :name, presence: true
+  validates :name, presence: true, length: { minimum: 1, maximum: 255 }
   validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   serialize :features, JSON
 end
