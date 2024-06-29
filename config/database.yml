@@ -22,7 +22,7 @@ default: &default
 development:
   <<: *default
   database: apace_systems_backend_development
-  username: rohanpatel
+  username: apace
   password: <%= Rails.application.credentials.development[:database][:password] %>
 
   # The specified database role being used to connect to PostgreSQL.
@@ -58,7 +58,7 @@ development:
 test:
   <<: *default
   database: apace_systems_backend_test
-  username: rohanpatel
+  username: apace
   password: <%= Rails.application.credentials.test[:database][:password] %>
   
 # As with config/credentials.yml, you never want to store sensitive information,
