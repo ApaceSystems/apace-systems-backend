@@ -1,0 +1,35 @@
+# .rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+
+# Layout
+Layout/LineLength:
+  Max: 120         
+
+# Metrics
+Metrics/MethodLength:
+  Max: 15 
+Metrics/BlockLength:
+  Exclude:
+    - 'config/routes.rb'
+
+# Style
+Style/Documentation:
+  Enabled: false  
+Style/FrozenStringLiteralComment:
+  Enabled: true   # Ensure using frozen string literals
+# Style/StringLiterals:
+#   EnforcedStyle: single_quotes # (or double_quotes)
+Style/RedundantSelf:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
