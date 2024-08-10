@@ -1,4 +1,5 @@
-# Clear existing data
+# frozen_string_literal: true
+
 Category.destroy_all
 Product.destroy_all
 

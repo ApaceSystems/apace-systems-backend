@@ -2,16 +2,35 @@
 
 module Mutations
   class CreateCategory < BaseMutation
-    argument :name, String, required: true
-    argument :description, String, required: false
+    argument :input, Types::CategoryInputType, required: true
 
     field :category, Types::CategoryType, null: true
+    field :errors, [String], null: false
 
-    def resolve(name:, description: nil)
-      category = Category.create!(name:, description:)
-      { category: }
-    rescue ActiveRecord::RecordInvalid => e
-      GraphQL::ExecutionError.new("Failed to create category: #{e.message}")
+    def resolve(input:)
+      category = Category.new(input.to_h)
+      if category.save
+        { category:, errors: [] }
+      else
+        { category: nil, errors: category.errors.full_messages }
+      end
     end
   end
 end
+# module Mutations
+#   class CreateCategory < BaseMutation
+#     argument :input, Types::CategoryInputType, required: true
+
+#     field :category, Types::CategoryType, null: true
+#     field :errors, [String], null: false
+
+#     def resolve(input:)
+#       category = Category.new(input.to_h)
+#       if category.save
+#         { category:, errors: [] }
+#       else
+#         { category: nil, errors: category.errors.full_messages }
+#       end
+#     end
+#   end
+# end

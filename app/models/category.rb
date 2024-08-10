@@ -12,4 +12,12 @@
 class Category < ApplicationRecord
   has_many :products, dependent: :destroy
   validates :name, presence: true, uniqueness: true
+
+  # after_commit :broadcast_update
+
+  # private
+
+  # def broadcast_update
+  #   ApaceSystemsBackendSchema.subscriptions.trigger('categoryUpdated', {}, self)
+  # end
 end

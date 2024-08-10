@@ -8,13 +8,18 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {}
+
+    Rails.logger.info "GraphQL Query: #{query}"
+    Rails.logger.info "GraphQL Variables: #{variables}"
+    Rails.logger.info "GraphQL Operation Name: #{operation_name}"
+
     result = ApaceSystemsBackendSchema.execute(query, variables:, context:,
                                                       operation_name:)
+
+    Rails.logger.info "GraphQL Result: #{result.to_h}"
     render json: result
   rescue StandardError => e
-    raise e unless Rails.env.development?
-
-    handle_error_in_development(e)
+    handle_error(e)
   end
 
   private
@@ -38,10 +43,17 @@ class GraphqlController < ApplicationController
     end
   end
 
-  def handle_error_in_development(e)
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+  def handle_error(e)
+    Rails.logger.error "GraphQL Error: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
 
-    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+    error_response = { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }
+    render json: error_response, status: 500
+
+    handle_error_in_development(e) if Rails.env.development?
+  end
+
+  def handle_error_in_development(e)
+    raise e if Rails.env.development?
   end
 end
