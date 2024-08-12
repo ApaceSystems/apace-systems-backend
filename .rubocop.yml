@@ -24,9 +24,7 @@ Metrics/BlockLength:
 Style/Documentation:
   Enabled: false  
 Style/FrozenStringLiteralComment:
-  Enabled: true   # Ensure using frozen string literals
-# Style/StringLiterals:
-#   EnforcedStyle: single_quotes # (or double_quotes)
+  Enabled: true   # ensure using frozen string literals
 Style/RedundantSelf:
   Enabled: false
 Style/ClassAndModuleChildren:

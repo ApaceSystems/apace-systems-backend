@@ -2,23 +2,21 @@
 
 module Mutations
   class UpdateProduct < BaseMutation
+    argument :input, Types::ProductInputType, required: true
     argument :id, ID, required: true
-    argument :name, String, required: false
-    argument :description, String, required: false
-    argument :price, Float, required: false
-    argument :category_id, ID, required: false
-    argument :features, GraphQL::Types::JSON, required: false
 
     field :product, Types::ProductType, null: true
+    field :errors, [String], null: false
 
-    def resolve(id:, **attributes)
-      product = Product.find(id)
-      product.update!(attributes)
-      { product: }
-    rescue ActiveRecord::RecordNotFound
-      GraphQL::ExecutionError.new('Product not found')
-    rescue ActiveRecord::RecordInvalid => e
-      GraphQL::ExecutionError.new("Failed to update product: #{e.message}")
+    def resolve(input:, id:)
+      product = Product.find_by(id:)
+      return { product: nil, errors: ['Product not found'] } unless product
+
+      if product.update(input.to_h)
+        { product:, errors: [] }
+      else
+        { product: nil, errors: product.errors.full_messages }
+      end
     end
   end
 end

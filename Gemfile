@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.3.1'
 
-# Essential gems
+
 gem 'graphql'
 gem 'graphql-ruby'
 gem 'importmap-rails'
@@ -18,7 +18,7 @@ gem 'sprockets-rails'
 gem 'stimulus-rails'
 gem 'turbo-rails'
 
-# Optional gems
+
 gem 'bootsnap', require: false
 gem 'tzinfo-data', platforms: %i[windows jruby]
 

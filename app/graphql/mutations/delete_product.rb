@@ -6,20 +6,16 @@ module Mutations
 
     field :success, Boolean, null: false
     field :message, String, null: true
-    # field :errors, [String], null: false
 
     def resolve(id:)
-      product = Product.find(id)
+      product = Product.find_by(id:)
+      return { success: false, message: 'Product not found' } unless product
 
-      product.destroy!
-      { success: true, message: 'Product deleted successfully' }
-    rescue ActiveRecord::RecordNotFound
-      GraphQL::ExecutionError.new('Product not found')
+      if product.destroy
+        { success: true, message: 'Product deleted successfully' }
+      else
+        { success: false, message: product.errors.full_messages.join(', ') }
+      end
     end
-    # if product.destroy
-    #   { success: true, errors: [] }
-    # else
-    #   { success: false, errors: product.errors.full_messages }
-    # end
   end
 end

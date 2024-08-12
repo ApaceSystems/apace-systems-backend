@@ -2,25 +2,18 @@
 
 module Mutations
   class CreateProduct < BaseMutation
-    argument :name, String, required: true
-    argument :description, String, required: false
-    argument :price, Float, required: false
-    argument :category_id, ID, required: true
-    argument :features, GraphQL::Types::JSON, required: false
+    argument :input, Types::ProductInputType, required: true
 
     field :product, Types::ProductType, null: true
+    field :errors, [String], null: false
 
-    def resolve(name:, category_id:, description: nil, price: nil, features: nil)
-      product = Product.create!(
-        name:,
-        description:,
-        price:,
-        category_id:,
-        features:
-      )
-      { product: }
-    rescue ActiveRecord::RecordInvalid => e
-      GraphQL::ExecutionError.new("Failed to create product: #{e.message}")
+    def resolve(input:)
+      product = Product.new(input.to_h)
+      if product.save
+        { product:, errors: [] }
+      else
+        { product: nil, errors: product.errors.full_messages }
+      end
     end
   end
 end
