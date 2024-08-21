@@ -36,4 +36,4 @@
 .DS_Store
 
 # Repopack output
-repopack-output.txt
+repopack-output.txt.DS_Store

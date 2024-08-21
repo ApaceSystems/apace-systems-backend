@@ -6,6 +6,7 @@ Product.destroy_all
 # Create categories
 cop = Category.create!(name: 'Car Operating Panels (COP)', description: 'Car operating panels for elevators.')
 lop = Category.create!(name: 'Landing Operating Panels (LOP)', description: 'Landing operating panels for elevators.')
+elevator_push_buttons = Category.create!(name: 'Elevator Push Buttons', description: 'Push Buttons for elevators.')
 other = Category.create!(name: 'Other Elevator Parts', description: 'Miscellaneous elevator parts.')
 
 # Create products
@@ -15,9 +16,9 @@ Product.create!(
   price: 1000.00,
   category: cop,
   features: {
-    display_type: 'LCD',
+    display_type: '7-Segment',
     voltage: '12V DC',
-    additional_features: 'Emergency light, emergency alarm, intercom'
+    additional_features: 'Emergency light, Intercom'
   }
 )
 
@@ -27,19 +28,31 @@ Product.create!(
   price: 500.00,
   category: lop,
   features: {
-    display_type: 'Seven segment, scrolling, LCD',
+    display_type: 'Dot-matrix',
     voltage: '12V DC, 24V DC'
   }
 )
 
 Product.create!(
   name: 'Elevator Parts',
-  description: 'COP with emergency light, emergency alarm with battery backup, LED colors - red, blue, green, orange, 12/24 VDC voltage, LOP - scrolling display, LCD display.',
+  description: 'COP with emergency light, emergency light with battery backup, LED colors - red, blue, green, orange, 12/24 VDC voltage, LOP - scrolling display, 7-Segment display.',
   price: 1500.00,
   category: other,
   features: {
-    display_type: 'Scrolling, LCD, Seven segment',
+    display_type: 'Dot-matrix, 7-Segment',
     voltage: '12V DC, 24V DC',
-    additional_features: 'Emergency light, emergency alarm, intercom'
+    additional_features: 'Emergency light, Intercom'
+  }
+)
+
+Product.create!(
+  name: 'Elevator Push Buttons',
+  description: 'Elevator Push Buttons',
+  price: 1500.00,
+  category: elevator_push_buttons,
+  features: {
+    display_type: '7-Segment',
+    voltage: '12V DC',
+    additional_features: ['Emergency light', 'Intercom']
   }
 )

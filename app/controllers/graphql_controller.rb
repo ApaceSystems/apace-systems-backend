@@ -12,6 +12,9 @@ class GraphqlController < ApplicationController
     Rails.logger.info "GraphQL Query: #{query}"
     Rails.logger.info "GraphQL Variables: #{variables}"
     Rails.logger.info "GraphQL Operation Name: #{operation_name}"
+    Rails.logger.info "Received GraphQL request: #{params.inspect}"
+    Rails.logger.info "GraphQL Request Headers: #{request.headers.to_h.select { |k, _v| k.start_with?('HTTP_') }}"
+    Rails.logger.info "GraphQL Request Body: #{request.body.read}"
 
     result = ApaceSystemsBackendSchema.execute(query, variables:, context:,
                                                       operation_name:)
