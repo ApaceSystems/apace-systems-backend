@@ -22,17 +22,19 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 
 group :development, :test do
   gem 'debug', platforms: %i[mri windows]
+  gem 'dotenv-rails'
   gem 'factory_bot_rails', '~> 6.2'
   gem 'rspec-rails', '~> 6.0'
-  gem 'shoulda-matchers', '~> 5.0'
 end
 
 group :development do
   gem 'graphiql-rails', '~> 1.10.0'
+  gem 'listen', '~> 3.8'
   gem 'web-console'
 end
 
 group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
+  gem 'shoulda-matchers', '~> 5.0'
 end
