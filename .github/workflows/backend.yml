@@ -16,13 +16,13 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: apace_systems_backend_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "pg_isready -U ${{ secrets.DATABASE_USER }}"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -39,10 +39,16 @@ jobs:
         run: |
           bundle install
       
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> $GITHUB_ENV
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> $GITHUB_ENV
+          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> $GITHUB_ENV
+
       - name: Set up the database
         run: |
-          bin/rails db:create
-          bin/rails db:migrate
+          bin/rails db:create RAILS_ENV=test
+          bin/rails db:migrate RAILS_ENV=test
 
       - name: Run tests
-        run: bundle exec rspec
+        run: RAILS_ENV=test bundle exec rspec
