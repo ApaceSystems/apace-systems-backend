@@ -19,10 +19,11 @@ jobs:
           POSTGRES_USER: ${{ secrets.DATABASE_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: apace_systems_backend_test
+          POSTGRES_HOST: ${{ secrets.DATABASE_HOST }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.DATABASE_USER }}"
+          --health-cmd "pg_isready -U $POSTGRES_USER"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -38,17 +39,19 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
+      - name: Wait for the database to be ready
+        run: sleep 10
+
       - name: Set environment variables
         run: |
           echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> $GITHUB_ENV
           echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> $GITHUB_ENV
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> $GITHUB_ENV
+          echo "POSTGRES_DB=apace_systems_backend_test" >> $GITHUB_ENV
 
-      - name: Debug environment variables
+      - name: List PostgreSQL databases
         run: |
-          echo "DATABASE_USER: ${{ secrets.DATABASE_USER }}"
-          echo "DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}"
-          echo "DATABASE_HOST: ${{ secrets.DATABASE_HOST }}"
+          PGPASSWORD=$DATABASE_PASSWORD psql -h $DATABASE_HOST -U $DATABASE_USER -d $POSTGRES_DB -c "\l"
 
       - name: Drop and recreate test database
         run: |
