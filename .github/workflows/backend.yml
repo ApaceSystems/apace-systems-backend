@@ -36,17 +36,23 @@ jobs:
           ruby-version: 3.3.1
 
       - name: Install dependencies
-        run: |
-          bundle install
-      
+        run: bundle install
+
       - name: Set environment variables
         run: |
           echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> $GITHUB_ENV
           echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> $GITHUB_ENV
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> $GITHUB_ENV
 
-      - name: Set up the database
+      - name: Debug environment variables
         run: |
+          echo "DATABASE_USER: ${{ secrets.DATABASE_USER }}"
+          echo "DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}"
+          echo "DATABASE_HOST: ${{ secrets.DATABASE_HOST }}"
+
+      - name: Drop and recreate test database
+        run: |
+          bin/rails db:drop RAILS_ENV=test || true
           bin/rails db:create RAILS_ENV=test
           bin/rails db:migrate RAILS_ENV=test
 

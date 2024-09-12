@@ -17,26 +17,3 @@ test:
 production:
   <<: *default
   database: apace_systems_backend_production
-
-# default: &default
-#   adapter: postgresql
-#   encoding: unicode
-#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
-# development:
-#   <<: *default
-#   database: apace_systems_backend_development
-#   username: apace
-#   password: <%= Rails.application.credentials.development[:database][:password] %>
-
-# test:
-#   <<: *default
-#   database: apace_systems_backend_test
-#   username: apace
-#   password: <%= Rails.application.credentials.test[:database][:password] %>
-  
-# production:
-#   <<: *default
-#   database: apace_systems_backend_production
-#   username: <%= ENV["APACE_SYSTEMS_BACKEND_DATABASE_USER"] %>
-#   password: <%= ENV["APACE_SYSTEMS_BACKEND_DATABASE_PASSWORD"] %>

@@ -42,17 +42,25 @@ module Types
     private
 
     def apply_filters(products, display_type, voltage, additional_features, color)
-      products = products.where("features->>'display_type' ILIKE ?", "%#{display_type}%") if display_type.present?
-      products = products.where("features->>'voltage' ILIKE ?", "%#{voltage}%") if voltage.present?
-      if additional_features.present?
-        additional_features.split(',').each do |feature|
-          products = products.where("features->>'additional_features' ILIKE ?", "%#{feature.strip}%")
-        end
-      end
-      products = products.where("features->>'color' ILIKE ?", "%#{color}%") if color.present?
-
+      products = products.with_display_type(display_type) if display_type.present?
+      products = products.with_voltage(voltage) if voltage.present?
+      products = products.with_additional_features(additional_features.split(',')) if additional_features.present?
+      products = products.with_color(color) if color.present?
       products
     end
+
+    # def apply_filters(products, display_type, voltage, additional_features, color)
+    #   products = products.where("features->>'display_type' ILIKE ?", "%#{display_type}%") if display_type.present?
+    #   products = products.where("features->>'voltage' ILIKE ?", "%#{voltage}%") if voltage.present?
+    #   if additional_features.present?
+    #     additional_features.split(',').each do |feature|
+    #       products = products.where("features->>'additional_features' ILIKE ?", "%#{feature.strip}%")
+    #     end
+    #   end
+    #   products = products.where("features->>'color' ILIKE ?", "%#{color}%") if color.present?
+
+    #   products
+    # end
 
     def apply_sorting(products, sort_by)
       case sort_by
