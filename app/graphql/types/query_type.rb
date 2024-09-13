@@ -10,19 +10,11 @@ module Types
       argument :id, ID, required: true
     end
 
-    # All products in a category
+    # All products in a category with filters
     field :products, [ProductType], null: false do
       argument :category_id, ID, required: true
-      argument :display_type, String, required: false
-      argument :voltage, String, required: false
-      argument :additional_features, String, required: false
-      argument :color, String, required: false
+      argument :filters, GraphQL::Types::JSON, required: false
       argument :sort_by, String, required: false, description: 'Options: price_asc, price_desc, name_asc, name_desc'
-    end
-
-    # A single product by ID
-    field :product, ProductType, null: false do
-      argument :id, ID, required: true
     end
 
     def categories
@@ -33,34 +25,40 @@ module Types
       Category.find(id)
     end
 
-    def products(category_id:, display_type: nil, voltage: nil, additional_features: nil, color: nil, sort_by: nil)
+    def products(category_id:, filters: {}, sort_by: nil)
       products = Category.find(category_id).products
-      products = apply_filters(products, display_type, voltage, additional_features, color)
+      products = apply_filters(products, filters)
       apply_sorting(products, sort_by)
     end
 
     private
 
-    def apply_filters(products, display_type, voltage, additional_features, color)
-      products = products.with_display_type(display_type) if display_type.present?
-      products = products.with_voltage(voltage) if voltage.present?
-      products = products.with_additional_features(additional_features.split(',')) if additional_features.present?
-      products = products.with_color(color) if color.present?
+    def apply_filters(products, filters)
+      products = filter_by_display_type(products, filters[:display_type]) if filters[:display_type].present?
+      products = filter_by_voltage(products, filters[:voltage]) if filters[:voltage].present?
+      if filters[:additional_features].present?
+        products = filter_by_additional_features(products,
+                                                 filters[:additional_features])
+      end
+      products = filter_by_color(products, filters[:color]) if filters[:color].present?
       products
     end
 
-    # def apply_filters(products, display_type, voltage, additional_features, color)
-    #   products = products.where("features->>'display_type' ILIKE ?", "%#{display_type}%") if display_type.present?
-    #   products = products.where("features->>'voltage' ILIKE ?", "%#{voltage}%") if voltage.present?
-    #   if additional_features.present?
-    #     additional_features.split(',').each do |feature|
-    #       products = products.where("features->>'additional_features' ILIKE ?", "%#{feature.strip}%")
-    #     end
-    #   end
-    #   products = products.where("features->>'color' ILIKE ?", "%#{color}%") if color.present?
+    def filter_by_display_type(products, display_type)
+      products.with_display_type(display_type)
+    end
 
-    #   products
-    # end
+    def filter_by_voltage(products, voltage)
+      products.with_voltage(voltage)
+    end
+
+    def filter_by_additional_features(products, additional_features)
+      products.with_additional_features(additional_features.split(','))
+    end
+
+    def filter_by_color(products, color)
+      products.with_color(color)
+    end
 
     def apply_sorting(products, sort_by)
       case sort_by
@@ -75,10 +73,6 @@ module Types
       else
         products
       end
-    end
-
-    def product(id:)
-      Product.find(id)
     end
   end
 end

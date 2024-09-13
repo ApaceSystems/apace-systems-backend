@@ -20,7 +20,7 @@ Metrics/BlockLength:
 
 # Style
 Style/Documentation:
-  Enabled: false  
+  Enabled: false 
 Style/FrozenStringLiteralComment:
   Enabled: true   # ensure using frozen string literals
 Style/RedundantSelf:
