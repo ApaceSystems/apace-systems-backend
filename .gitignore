@@ -36,8 +36,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-.DS_Store
 
 # Repopack output
-repopack-output.txt.DS_Store
-.DS_Store
+repopack-output.txt
