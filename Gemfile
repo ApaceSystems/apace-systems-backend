@@ -12,7 +12,6 @@ gem 'pg', '~> 1.1'
 gem 'puma', '>= 5.0'
 gem 'rack-cors'
 gem 'rails', '~> 7.1.3', '>= 7.1.3.4'
-gem 'rubocop', '~> 1.0', require: false
 gem 'sprockets-rails'
 gem 'stimulus-rails'
 gem 'turbo-rails'
@@ -25,6 +24,8 @@ group :development, :test do
   gem 'dotenv-rails'
   gem 'factory_bot_rails', '~> 6.2'
   gem 'rspec-rails', '~> 6.0'
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
 end
 
 group :development do

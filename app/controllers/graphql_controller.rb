@@ -4,21 +4,7 @@ class GraphqlController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def execute
-    variables = prepare_variables(params[:variables])
-    query = params[:query]
-    operation_name = params[:operationName]
-    context = {}
-
-    Rails.logger.info "GraphQL Query: #{query}"
-    Rails.logger.info "GraphQL Variables: #{variables}"
-    Rails.logger.info "GraphQL Operation Name: #{operation_name}"
-    Rails.logger.info "Received GraphQL request: #{params.inspect}"
-    Rails.logger.info "GraphQL Request Headers: #{request.headers.to_h.select { |k, _v| k.start_with?('HTTP_') }}"
-    Rails.logger.info "GraphQL Request Body: #{request.body.read}"
-
-    result = ApaceSystemsBackendSchema.execute(query, variables:, context:,
-                                                      operation_name:)
-
+    result = execute_graphql_query(params)
     Rails.logger.info "GraphQL Result: #{result.to_h}"
     render json: result
   rescue StandardError => e
@@ -27,17 +13,31 @@ class GraphqlController < ApplicationController
 
   private
 
+  def execute_graphql_query(params)
+    query = params[:query]
+    variables = prepare_variables(params[:variables])
+    operation_name = params[:operationName]
+    context = {}
+
+    log_graphql_request(query, variables, operation_name, params)
+
+    ApaceSystemsBackendSchema.execute(query, variables:, context:, operation_name:)
+  end
+
+  def log_graphql_request(query, variables, operation_name, params)
+    Rails.logger.info "GraphQL Query: #{query}"
+    Rails.logger.info "GraphQL Variables: #{variables}"
+    Rails.logger.info "GraphQL Operation Name: #{operation_name}"
+    Rails.logger.info "Received GraphQL request: #{params.inspect}"
+    Rails.logger.info "GraphQL Request Headers: #{request.headers.to_h.select { |k, _v| k.start_with?('HTTP_') }}"
+    Rails.logger.info "GraphQL Request Body: #{request.body.read}"
+  end
+
   def prepare_variables(variables_param)
     case variables_param
     when String
-      if variables_param.present?
-        JSON.parse(variables_param) || {}
-      else
-        {}
-      end
-    when Hash
-      variables_param
-    when ActionController::Parameters
+      parse_variables(variables_param)
+    when Hash, ActionController::Parameters
       variables_param.to_unsafe_hash
     when nil
       {}
@@ -46,17 +46,23 @@ class GraphqlController < ApplicationController
     end
   end
 
-  def handle_error(e)
-    Rails.logger.error "GraphQL Error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
+  def parse_variables(variables_param)
+    return {} unless variables_param.present?
 
-    error_response = { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }
-    render json: error_response, status: 500
-
-    handle_error_in_development(e) if Rails.env.development?
+    JSON.parse(variables_param) || {}
   end
 
-  def handle_error_in_development(e)
-    raise e if Rails.env.development?
+  def handle_error(error)
+    Rails.logger.error "GraphQL Error: #{error.message}"
+    Rails.logger.error error.backtrace.join("\n")
+
+    error_response = { errors: [{ message: error.message, backtrace: error.backtrace }], data: {} }
+    render json: error_response, status: 500
+
+    handle_error_in_development(error) if Rails.env.development?
+  end
+
+  def handle_error_in_development(error)
+    raise error if Rails.env.development?
   end
 end
